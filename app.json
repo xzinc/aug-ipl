@@ -1,0 +1,58 @@
+{
+  "name": "IPL Telegram Bot",
+  "description": "A Telegram bot for IPL information with AI capabilities and Telugu language support",
+  "repository": "https://github.com/yourusername/Tg-ipl",
+  "keywords": ["python", "telegram", "bot", "ipl", "cricket", "telugu", "nlp", "ai"],
+  "env": {
+    "API_ID": {
+      "description": "Your Telegram API ID from my.telegram.org",
+      "required": true
+    },
+    "API_HASH": {
+      "description": "Your Telegram API Hash from my.telegram.org",
+      "required": true
+    },
+    "BOT_TOKEN": {
+      "description": "Your Telegram Bot Token from @BotFather",
+      "required": true
+    },
+    "MONGODB_URI": {
+      "description": "Your MongoDB connection URI (primary)",
+      "required": true
+    },
+    "MONGODB_URI_BACKUP": {
+      "description": "Your backup MongoDB connection URI (optional)",
+      "required": false
+    },
+    "KAGGLE_USERNAME": {
+      "description": "Your Kaggle username for dataset access",
+      "required": true
+    },
+    "KAGGLE_KEY": {
+      "description": "Your Kaggle API key for dataset access",
+      "required": true
+    },
+    "ADMIN_USERS": {
+      "description": "Comma-separated list of Telegram user IDs who have admin access",
+      "required": false
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "eco"
+    }
+  },
+  "addons": [
+    {
+      "plan": "mongolab:sandbox",
+      "as": "MONGODB"
+    }
+  ],
+  "success_url": "/"
+}
