@@ -4,7 +4,6 @@ import json
 import os
 from pathlib import Path
 from ml.nlp_processor import detect_intent, extract_entities
-from ml.ipl_stats import search_ipl_data
 
 logger = logging.getLogger(__name__)
 
@@ -76,7 +75,7 @@ def load_learned_responses():
     Load learned responses from file
     """
     global learned_responses
-    
+
     try:
         if LEARNED_RESPONSES_PATH.exists():
             with open(LEARNED_RESPONSES_PATH, 'r', encoding='utf-8') as f:
@@ -93,16 +92,49 @@ def save_learned_responses():
     try:
         # Create directory if it doesn't exist
         LEARNED_RESPONSES_PATH.parent.mkdir(exist_ok=True)
-        
+
         with open(LEARNED_RESPONSES_PATH, 'w', encoding='utf-8') as f:
             json.dump(learned_responses, f, ensure_ascii=False, indent=2)
-        
+
         logger.info(f"Saved {sum(len(v) for v in learned_responses.values())} learned responses")
     except Exception as e:
         logger.error(f"Error saving learned responses: {e}")
 
 # Load learned responses at module import
 load_learned_responses()
+
+# Mock function for search_ipl_data (since we removed the actual implementation)
+def search_ipl_data(data_type, query):
+    """
+    Simplified mock function for searching IPL data
+    """
+    if data_type == 'player':
+        return {
+            'name': query,
+            'team': 'Sample Team',
+            'role': 'Batsman',
+            'matches': '50',
+            'runs': '1500',
+            'wickets': '10'
+        }
+    elif data_type == 'team':
+        return {
+            'name': query,
+            'full_name': f'{query} Cricket Team',
+            'home_ground': 'Sample Stadium',
+            'captain': 'Sample Captain',
+            'championships': '2'
+        }
+    elif data_type == 'match':
+        teams = query.split(' vs ')
+        return {
+            'team1': teams[0],
+            'team2': teams[1] if len(teams) > 1 else 'Unknown Team',
+            'date': '2023-04-15',
+            'venue': 'Sample Stadium',
+            'result': 'Team 1 won by 5 wickets'
+        }
+    return None
 
 def get_response(text, language='english'):
     """
@@ -111,27 +143,27 @@ def get_response(text, language='english'):
     # Check for greetings
     if any(greeting in text.lower() for greeting in ['hello', 'hi', 'hey', 'namaste', 'నమస్కారం', 'హలో']):
         return random.choice(conversation_data[language]['greetings'])
-    
+
     # Check for farewells
     if any(farewell in text.lower() for farewell in ['bye', 'goodbye', 'see you', 'వీడ్కోలు', 'బై']):
         return random.choice(conversation_data[language]['farewells'])
-    
+
     # Check for thanks
     if any(thanks in text.lower() for thanks in ['thanks', 'thank you', 'ధన్యవాదాలు', 'థాంక్స్']):
         return random.choice(conversation_data[language]['thanks'])
-    
+
     # Check learned responses
     for pattern, response in learned_responses[language].items():
         if pattern.lower() in text.lower():
             return response
-    
+
     # Detect intent
     intent = detect_intent(text)
-    
+
     # Handle intent-based responses
     if intent != 'conversation':
         entities = extract_entities(text, intent)
-        
+
         if intent == 'player_info' and 'player_name' in entities:
             player_info = search_ipl_data('player', entities['player_name'])
             if player_info:
@@ -153,7 +185,7 @@ def get_response(text, language='english'):
                         f"పరుగులు: {player_info['runs']}\n"
                         f"వికెట్లు: {player_info['wickets']}"
                     )
-        
+
         elif intent == 'team_info' and 'team_name' in entities:
             team_info = search_ipl_data('team', entities['team_name'])
             if team_info:
@@ -173,7 +205,7 @@ def get_response(text, language='english'):
                         f"కెప్టెన్: {team_info['captain']}\n"
                         f"ఛాంపియన్‌షిప్‌లు: {team_info['championships']}"
                     )
-        
+
         elif intent == 'match_info' and 'team1' in entities and 'team2' in entities:
             match_info = search_ipl_data('match', f"{entities['team1']} vs {entities['team2']}")
             if match_info:
@@ -191,7 +223,7 @@ def get_response(text, language='english'):
                         f"వేదిక: {match_info['venue']}\n"
                         f"ఫలితం: {match_info['result']}"
                     )
-    
+
     # Fallback response
     return random.choice(conversation_data[language]['fallbacks'])
 
@@ -202,11 +234,11 @@ def learn_response(text, response, language='english'):
     # Extract key phrases from text (simple implementation)
     words = text.lower().split()
     key_phrase = ' '.join(words[:min(5, len(words))])
-    
+
     # Store the response
     learned_responses[language][key_phrase] = response
-    
+
     # Save learned responses
     save_learned_responses()
-    
+
     return True
