@@ -1,0 +1,11 @@
+/tests/
+*.md
+*.rst
+*.txt
+!requirements.txt
+*.pyc
+__pycache__/
+.git/
+.github/
+.gitignore
+.DS_Store
