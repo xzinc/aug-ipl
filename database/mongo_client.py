@@ -1,7 +1,6 @@
 import logging
 import copy
 import time
-from datetime import datetime
 
 # Import pymongo conditionally to allow running without it
 try:
@@ -70,7 +69,7 @@ class MemoryCollection:
         Simulate MongoDB update_one operation
         """
         # Find the first matching document
-        for i, doc in enumerate(self.data):
+        for doc in self.data:
             if self._matches_query(doc, query):
                 # Apply updates
                 if '$set' in update:
@@ -267,7 +266,7 @@ class MongoDBClient:
 
         logger.info("In-memory database ready")
 
-    def _memory_db_command(self, command_name, *args, **kwargs):
+    def _memory_db_command(self, command_name, **kwargs):
         """
         Simulate MongoDB commands for in-memory database
         """
@@ -300,7 +299,7 @@ class MongoDBClient:
         """
         Get a collection from the database
         """
-        if not self.db:
+        if self.db is None:
             logger.error("No database connection available")
             return None
 
@@ -319,7 +318,7 @@ class MongoDBClient:
         """
         Save user data to the database
         """
-        if not self.db:
+        if self.db is None:
             logger.error("No database connection available")
             return False
 
@@ -350,7 +349,7 @@ class MongoDBClient:
         """
         Save message data to the database
         """
-        if not self.db:
+        if self.db is None:
             logger.error("No database connection available")
             return False
 
@@ -374,8 +373,8 @@ class MongoDBClient:
         """
         Check if the database size is approaching limits
         """
-        # If using in-memory mode, no need to check size
-        if self.client is None:
+        # If using in-memory mode or no database, no need to check size
+        if self.client is None or self.db is None:
             return False
 
         try:
@@ -426,7 +425,7 @@ class MongoDBClient:
         """
         Get user data from the database
         """
-        if not self.db:
+        if self.db is None:
             logger.error("No database connection available")
             return None
 
@@ -443,7 +442,7 @@ class MongoDBClient:
         """
         Get messages for a specific user
         """
-        if not self.db:
+        if self.db is None:
             logger.error("No database connection available")
             return []
 
