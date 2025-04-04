@@ -4,6 +4,7 @@ from datetime import datetime
 from utils.data_loader import get_ipl_data
 from ml.ipl_stats import get_ipl_stats, search_ipl_data
 from ml.nlp_processor import process_telugu_text
+from ml import gemini_ai
 
 logger = logging.getLogger(__name__)
 
@@ -75,26 +76,61 @@ def setup_command_handlers(client, db_client):
     async def stats_command(event):
         """Handle /stats command"""
         try:
+            # First, try to get stats from Gemini AI
+            gemini_stats = None
+            if gemini_ai.is_available():
+                # Let the user know we're fetching data
+                await event.respond(f"Fetching latest IPL statistics...")
+                gemini_stats = await gemini_ai.get_ipl_stats()
+
+            if gemini_stats:
+                # Format the response from Gemini AI
+                stats_message = (
+                    "📊 **IPL Statistics**\n\n"
+                    f"• Total Matches: {gemini_stats.get('total_matches', 'N/A')}\n"
+                    f"• Most Wins: {gemini_stats.get('most_wins_team', 'N/A')} ({gemini_stats.get('most_wins_count', 'N/A')} wins)\n"
+                    f"• Highest Score: {gemini_stats.get('highest_score_team', 'N/A')} ({gemini_stats.get('highest_score', 'N/A')} runs)\n"
+                    f"• Most Runs: {gemini_stats.get('most_runs_player', 'N/A')} ({gemini_stats.get('most_runs', 'N/A')} runs)\n"
+                    f"• Most Wickets: {gemini_stats.get('most_wickets_player', 'N/A')} ({gemini_stats.get('most_wickets', 'N/A')} wickets)\n"
+                )
+
+                # Add data source
+                stats_message += f"\n_Data provided by Gemini AI - {datetime.now().strftime('%Y-%m-%d')}_"
+
+                await event.respond(stats_message)
+                return
+
+            # Fallback to local data if Gemini AI is not available or fails
             stats = get_ipl_stats()
 
             if not stats:
-                await event.respond("Sorry, I couldn't retrieve IPL statistics at the moment. Please try again later.")
+                await event.respond(f"Sorry, I couldn't retrieve IPL statistics at the moment.")
                 return
 
+            # Format the response from local data
             stats_message = (
                 "📊 **IPL Statistics**\n\n"
-                f"• Total Matches: {stats['total_matches']}\n"
-                f"• Most Wins: {stats['most_wins_team']} ({stats['most_wins_count']} wins)\n"
-                f"• Highest Score: {stats['highest_score_team']} ({stats['highest_score']} runs)\n"
-                f"• Most Runs: {stats['most_runs_player']} ({stats['most_runs']} runs)\n"
-                f"• Most Wickets: {stats['most_wickets_player']} ({stats['most_wickets']} wickets)\n"
+                f"• Total Matches: {stats.get('total_matches', 'N/A')}\n"
+                f"• Most Wins: {stats.get('most_wins_team', 'N/A')} ({stats.get('most_wins_count', 'N/A')} wins)\n"
+                f"• Highest Score: {stats.get('highest_score_team', 'N/A')} ({stats.get('highest_score', 'N/A')} runs)\n"
+                f"• Most Runs: {stats.get('most_runs_player', 'N/A')} ({stats.get('most_runs', 'N/A')} runs)\n"
+                f"• Most Wickets: {stats.get('most_wickets_player', 'N/A')} ({stats.get('most_wickets', 'N/A')} wickets)\n"
             )
+
+            # Add data source
+            stats_message += f"\n_Data from local database - may not be current_"
 
             await event.respond(stats_message)
 
         except Exception as e:
             logger.error(f"Error in stats command: {e}")
-            await event.respond("Sorry, an error occurred while retrieving statistics.")
+            await event.respond("Sorry, an error occurred while retrieving statistics.\nPlease try again later.")
+
+            # Try to provide some helpful information even if there's an error
+            try:
+                await event.respond(f"You can also try other commands like /team CSK or /player Virat Kohli.")
+            except:
+                pass
 
     @client.on(events.NewMessage(pattern='/player (.+)'))
     async def player_command(event):
@@ -102,30 +138,75 @@ def setup_command_handlers(client, db_client):
         try:
             player_name = event.pattern_match.group(1).strip()
 
-            # Search for player in IPL data
+            # First, try to get player info from Gemini AI
+            gemini_player_info = None
+            if gemini_ai.is_available():
+                # Let the user know we're fetching data
+                await event.respond(f"Fetching latest information about {player_name}...")
+                gemini_player_info = await gemini_ai.get_ipl_player_info(player_name)
+
+            if gemini_player_info:
+                # Format the response from Gemini AI
+                player_message = (
+                    f"🏏 **{gemini_player_info.get('name', player_name)}**\n\n"
+                    f"• Team: {gemini_player_info.get('team', 'N/A')}\n"
+                    f"• Role: {gemini_player_info.get('role', 'N/A')}\n"
+                    f"• Matches: {gemini_player_info.get('matches', 'N/A')}\n"
+                    f"• Runs: {gemini_player_info.get('runs', 'N/A')}\n"
+                    f"• Wickets: {gemini_player_info.get('wickets', 'N/A')}\n"
+                )
+
+                # Add recent performance if available
+                if 'recent_performance' in gemini_player_info:
+                    player_message += f"\n**Recent Performance:**\n{gemini_player_info['recent_performance']}\n"
+
+                # Add data source
+                player_message += f"\n_Data provided by Gemini AI - {datetime.now().strftime('%Y-%m-%d')}_"
+
+                await event.respond(player_message)
+                return
+
+            # Fallback to local data if Gemini AI is not available or fails
             player_info = search_ipl_data('player', player_name)
 
             if not player_info:
                 await event.respond(f"Sorry, I couldn't find information about player '{player_name}'.")
                 return
 
+            # Format the response from local data
             player_message = (
                 f"🏏 **{player_info['name']}**\n\n"
                 f"• Team: {player_info['team']}\n"
                 f"• Role: {player_info['role']}\n"
                 f"• Matches: {player_info['matches']}\n"
                 f"• Runs: {player_info['runs']}\n"
-                f"• Average: {player_info['average']}\n"
-                f"• Strike Rate: {player_info['strike_rate']}\n"
                 f"• Wickets: {player_info['wickets']}\n"
-                f"• Economy: {player_info['economy']}\n"
             )
+
+            # Add additional fields if they exist
+            if 'average' in player_info:
+                player_message += f"• Average: {player_info['average']}\n"
+
+            if 'strike_rate' in player_info:
+                player_message += f"• Strike Rate: {player_info['strike_rate']}\n"
+
+            if 'economy' in player_info:
+                player_message += f"• Economy: {player_info['economy']}\n"
+
+            # Add data source
+            player_message += f"\n_Data from local database - may not be current_"
 
             await event.respond(player_message)
 
         except Exception as e:
             logger.error(f"Error in player command: {e}")
-            await event.respond("Sorry, an error occurred while retrieving player information.")
+            await event.respond("Sorry, an error occurred while retrieving player information.\nPlease try again later or try with a different player name.")
+
+            # Try to provide some helpful information even if there's an error
+            try:
+                await event.respond(f"You can try searching for popular players like Virat Kohli, MS Dhoni, or Rohit Sharma.")
+            except:
+                pass
 
     @client.on(events.NewMessage(pattern='/team (.+)'))
     async def team_command(event):
@@ -133,31 +214,90 @@ def setup_command_handlers(client, db_client):
         try:
             team_name = event.pattern_match.group(1).strip()
 
-            # Search for team in IPL data
+            # First, try to get team info from Gemini AI
+            gemini_team_info = None
+            if gemini_ai.is_available():
+                # Let the user know we're fetching data
+                await event.respond(f"Fetching latest information about {team_name}...")
+                gemini_team_info = await gemini_ai.get_ipl_team_info(team_name)
+
+            if gemini_team_info:
+                # Format the response from Gemini AI
+                team_message = (
+                    f"🏆 **{gemini_team_info.get('name', team_name)}**\n\n"
+                    f"• Full Name: {gemini_team_info.get('full_name', 'N/A')}\n"
+                    f"• Home Ground: {gemini_team_info.get('home_ground', 'N/A')}\n"
+                    f"• Captain: {gemini_team_info.get('captain', 'N/A')}\n"
+                )
+
+                # Add coach if available
+                if 'coach' in gemini_team_info:
+                    team_message += f"• Coach: {gemini_team_info['coach']}\n"
+
+                # Add championships if available
+                team_message += f"• Championships: {gemini_team_info.get('championships', 'N/A')}\n"
+
+                # Add key players if available
+                if 'key_players' in gemini_team_info:
+                    team_message += f"• Key Players: {gemini_team_info['key_players']}\n"
+
+                # Add recent performance if available
+                if 'recent_performance' in gemini_team_info:
+                    team_message += f"\n**Recent Performance:**\n{gemini_team_info['recent_performance']}\n"
+
+                # Add data source
+                team_message += f"\n_Data provided by Gemini AI - {datetime.now().strftime('%Y-%m-%d')}_"
+
+                await event.respond(team_message)
+                return
+
+            # Fallback to local data if Gemini AI is not available or fails
             team_info = search_ipl_data('team', team_name)
 
             if not team_info:
                 await event.respond(f"Sorry, I couldn't find information about team '{team_name}'.")
                 return
 
+            # Format the response from local data
             team_message = (
                 f"🏆 **{team_info['name']}**\n\n"
                 f"• Full Name: {team_info['full_name']}\n"
                 f"• Home Ground: {team_info['home_ground']}\n"
                 f"• Captain: {team_info['captain']}\n"
-                f"• Coach: {team_info['coach']}\n"
-                f"• Championships: {team_info['championships']}\n"
-                f"• Matches Played: {team_info['matches_played']}\n"
-                f"• Wins: {team_info['wins']}\n"
-                f"• Losses: {team_info['losses']}\n"
-                f"• Win Percentage: {team_info['win_percentage']}%\n"
             )
+
+            # Add additional fields if they exist
+            if 'coach' in team_info:
+                team_message += f"• Coach: {team_info['coach']}\n"
+
+            team_message += f"• Championships: {team_info['championships']}\n"
+
+            if 'matches_played' in team_info:
+                team_message += f"• Matches Played: {team_info['matches_played']}\n"
+
+            if 'wins' in team_info:
+                team_message += f"• Wins: {team_info['wins']}\n"
+
+            if 'losses' in team_info:
+                team_message += f"• Losses: {team_info['losses']}\n"
+
+            if 'win_percentage' in team_info:
+                team_message += f"• Win Percentage: {team_info['win_percentage']}%\n"
+
+            # Add data source
+            team_message += f"\n_Data from local database - may not be current_"
 
             await event.respond(team_message)
 
         except Exception as e:
             logger.error(f"Error in team command: {e}")
-            await event.respond("Sorry, an error occurred while retrieving team information.")
+            await event.respond("Sorry, an error occurred while retrieving team information.\nPlease try again later or try with a different team name.")
+
+            # Try to provide some helpful information even if there's an error
+            try:
+                await event.respond(f"You can try searching for popular teams like CSK, MI, RCB, or KKR.")
+            except:
+                pass
 
     @client.on(events.NewMessage(pattern='/telugu'))
     async def telugu_command(event):

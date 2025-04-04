@@ -11,6 +11,7 @@ A Telegram bot that provides information about IPL (Indian Premier League) crick
 ## Features
 
 - **IPL Data**: Access to extensive IPL datasets for insights, stats, and updates
+- **Gemini AI Integration**: Up-to-date information using Google's Gemini AI
 - **AI Conversations**: Human-like conversations that improve over time
 - **Telugu Language Support**: Interact with the bot in Telugu
 - **Admin Privileges**: Manage user interactions, customize responses, and moderate content
@@ -62,6 +63,9 @@ A Telegram bot that provides information about IPL (Indian Premier League) crick
 
    # Admin users (comma-separated Telegram user IDs)
    ADMIN_USERS=123456789,987654321
+
+   # Gemini AI API key
+   GEMINI_API_KEY=your_gemini_api_key
    ```
 
 5. Run the bot:
@@ -79,6 +83,7 @@ A Telegram bot that provides information about IPL (Indian Premier League) crick
    - `MONGODB_URI`: Your MongoDB connection URI
    - `KAGGLE_USERNAME`: Your Kaggle username
    - `KAGGLE_KEY`: Your Kaggle API key
+   - `GEMINI_API_KEY`: Your Google Gemini AI API key
 
 3. Deploy the app
 
@@ -103,6 +108,17 @@ To access the IPL and Telugu NLP datasets, you need Kaggle API credentials:
 3. Scroll down to the API section and click "Create New API Token"
 4. This will download a `kaggle.json` file with your credentials
 5. Add your Kaggle username and key to the `.env` file or Heroku environment variables
+
+## Gemini AI Setup
+
+To enable the Gemini AI features for up-to-date IPL information:
+
+1. Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Create a new API key
+3. Add the API key to your `.env` file as `GEMINI_API_KEY=your_key_here` or to your Heroku environment variables
+4. Restart the bot
+
+With Gemini AI enabled, the bot will provide the latest information about IPL teams, players, and statistics, as well as enhanced conversational abilities.
 
 ## Bot Commands
 
@@ -142,6 +158,7 @@ To access the IPL and Telugu NLP datasets, you need Kaggle API credentials:
   - `nlp_processor.py` - NLP processing
   - `conversation_model.py` - Conversation model
   - `ipl_stats.py` - IPL statistics
+  - `gemini_ai.py` - Google Gemini AI integration
 - `data/` - Data storage
 - `templates/` - Web templates
 
@@ -158,3 +175,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [Telethon](https://github.com/LonamiWebs/Telethon) - Python MTProto library for Telegram
 - [IPL Dataset](https://github.com/12345k/IPL-Dataset) - IPL cricket data
 - [Telugu NLP Dataset](https://www.kaggle.com/sudalairajkumar/telugu-nlp) - Telugu language processing data
+- [Google Gemini AI](https://ai.google.dev/gemini-api) - Advanced AI model for up-to-date information

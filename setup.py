@@ -12,6 +12,7 @@ setup(
         "kagglehub==0.2.5",
         "flask==2.0.1",
         "werkzeug==2.0.3",
+        "google-generativeai==0.3.1",
     ],
     python_requires=">=3.9,<3.12",
 )

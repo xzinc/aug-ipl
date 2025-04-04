@@ -7,3 +7,5 @@ kagglehub==0.2.5
 # Flask and compatible Werkzeug version
 flask==2.0.1
 werkzeug==2.0.3
+# Google Generative AI for Gemini integration
+google-generativeai==0.3.1

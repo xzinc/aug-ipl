@@ -4,6 +4,7 @@ from telethon import events
 from datetime import datetime
 from ml.nlp_processor import process_text, is_telugu_text, process_telugu_text
 from ml.conversation_model import get_response
+from ml import gemini_ai
 
 logger = logging.getLogger(__name__)
 
@@ -62,20 +63,36 @@ def setup_message_handlers(client, db_client):
         message_text = event.message.text
         is_telugu = is_telugu_text(message_text)
 
-        # Process message based on language
-        if is_telugu or language_preference == 'telugu':
-            # Process Telugu message
-            if is_telugu:
-                processed_text = process_telugu_text(message_text)
+        # Determine language preference
+        current_language = 'telugu' if is_telugu or language_preference == 'telugu' else 'english'
+
+        # First try to get response from Gemini AI
+        gemini_response = None
+        if gemini_ai.is_available():
+            try:
+                gemini_response = await gemini_ai.chat_with_gemini(message_text, current_language)
+                logger.info(f"Got response from Gemini AI: {gemini_response[:50]}...")
+            except Exception as e:
+                logger.error(f"Error getting response from Gemini AI: {e}")
+
+        if gemini_response:
+            # Send Gemini AI response
+            response = gemini_response
+        else:
+            # Fallback to local model if Gemini AI is not available or fails
+            # Process message based on language
+            if current_language == 'telugu':
+                # Process Telugu message
+                if is_telugu:
+                    processed_text = process_telugu_text(message_text)
+                else:
+                    # User has Telugu preference but sent English message
+                    processed_text = process_text(message_text)
                 response = get_response(processed_text, 'telugu')
             else:
-                # User has Telugu preference but sent English message
+                # Process English message
                 processed_text = process_text(message_text)
-                response = get_response(processed_text, 'telugu')
-        else:
-            # Process English message
-            processed_text = process_text(message_text)
-            response = get_response(processed_text, 'english')
+                response = get_response(processed_text, 'english')
 
         # Send response
         await event.respond(response)
