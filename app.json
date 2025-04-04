@@ -1,8 +1,8 @@
 {
   "name": "IPL Telegram Bot",
-  "description": "A Telegram bot for IPL information with AI capabilities and Telugu language support",
+  "description": "A Telegram bot for IPL information with Gemini AI integration, up-to-date cricket data, Telugu transliteration, and flirty conversation style",
   "repository": "https://github.com/yourusername/Tg-ipl",
-  "keywords": ["python", "telegram", "bot", "ipl", "cricket", "telugu", "nlp", "ai"],
+  "keywords": ["python", "telegram", "bot", "ipl", "cricket", "telugu", "gemini-ai", "transliteration", "flirty"],
   "env": {
     "API_ID": {
       "description": "Your Telegram API ID from my.telegram.org",
@@ -35,6 +35,10 @@
     "ADMIN_USERS": {
       "description": "Comma-separated list of Telegram user IDs who have admin access",
       "required": false
+    },
+    "GEMINI_API_KEY": {
+      "description": "Your Google Gemini AI API key for up-to-date IPL information",
+      "required": true
     }
   },
   "buildpacks": [

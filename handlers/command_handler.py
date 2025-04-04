@@ -86,7 +86,7 @@ def setup_command_handlers(client, db_client):
             if gemini_stats:
                 # Format the response from Gemini AI
                 stats_message = (
-                    "📊 **IPL Statistics**\n\n"
+                    f"📊 **IPL {datetime.now().year} Statistics**\n\n"
                     f"• Total Matches: {gemini_stats.get('total_matches', 'N/A')}\n"
                     f"• Most Wins: {gemini_stats.get('most_wins_team', 'N/A')} ({gemini_stats.get('most_wins_count', 'N/A')} wins)\n"
                     f"• Highest Score: {gemini_stats.get('highest_score_team', 'N/A')} ({gemini_stats.get('highest_score', 'N/A')} runs)\n"
@@ -94,8 +94,20 @@ def setup_command_handlers(client, db_client):
                     f"• Most Wickets: {gemini_stats.get('most_wickets_player', 'N/A')} ({gemini_stats.get('most_wickets', 'N/A')} wickets)\n"
                 )
 
+                # Add highest individual score if available
+                if 'highest_individual_score' in gemini_stats and 'highest_individual_score_player' in gemini_stats:
+                    stats_message += f"• Highest Individual Score: {gemini_stats['highest_individual_score_player']} ({gemini_stats['highest_individual_score']})\n"
+
+                # Add best bowling figures if available
+                if 'best_bowling_figures' in gemini_stats and 'best_bowling_player' in gemini_stats:
+                    stats_message += f"• Best Bowling: {gemini_stats['best_bowling_player']} ({gemini_stats['best_bowling_figures']})\n"
+
+                # Add points table if available
+                if 'points_table' in gemini_stats:
+                    stats_message += f"\n**Current Points Table:**\n{gemini_stats['points_table']}\n"
+
                 # Add data source
-                stats_message += f"\n_Data provided by Gemini AI - {datetime.now().strftime('%Y-%m-%d')}_"
+                stats_message += f"\n_Latest data from IPL {datetime.now().year} - Updated {datetime.now().strftime('%Y-%m-%d')}_"
 
                 await event.respond(stats_message)
                 return
@@ -151,17 +163,29 @@ def setup_command_handlers(client, db_client):
                     f"🏏 **{gemini_player_info.get('name', player_name)}**\n\n"
                     f"• Team: {gemini_player_info.get('team', 'N/A')}\n"
                     f"• Role: {gemini_player_info.get('role', 'N/A')}\n"
+                    f"• Country: {gemini_player_info.get('country', 'N/A')}\n"
                     f"• Matches: {gemini_player_info.get('matches', 'N/A')}\n"
                     f"• Runs: {gemini_player_info.get('runs', 'N/A')}\n"
                     f"• Wickets: {gemini_player_info.get('wickets', 'N/A')}\n"
                 )
+
+                # Add batting stats if available
+                if 'batting_avg' in gemini_player_info:
+                    player_message += f"• Batting Average: {gemini_player_info['batting_avg']}\n"
+
+                if 'strike_rate' in gemini_player_info:
+                    player_message += f"• Strike Rate: {gemini_player_info['strike_rate']}\n"
+
+                # Add current form if available
+                if 'current_form' in gemini_player_info:
+                    player_message += f"\n**Current Form:**\n{gemini_player_info['current_form']}\n"
 
                 # Add recent performance if available
                 if 'recent_performance' in gemini_player_info:
                     player_message += f"\n**Recent Performance:**\n{gemini_player_info['recent_performance']}\n"
 
                 # Add data source
-                player_message += f"\n_Data provided by Gemini AI - {datetime.now().strftime('%Y-%m-%d')}_"
+                player_message += f"\n_Latest data from IPL {datetime.now().year} - Updated {datetime.now().strftime('%Y-%m-%d')}_"
 
                 await event.respond(player_message)
                 return
@@ -237,16 +261,20 @@ def setup_command_handlers(client, db_client):
                 # Add championships if available
                 team_message += f"• Championships: {gemini_team_info.get('championships', 'N/A')}\n"
 
+                # Add owner if available
+                if 'owner' in gemini_team_info:
+                    team_message += f"• Owner: {gemini_team_info['owner']}\n"
+
                 # Add key players if available
                 if 'key_players' in gemini_team_info:
-                    team_message += f"• Key Players: {gemini_team_info['key_players']}\n"
+                    team_message += f"\n**Key Players:**\n{gemini_team_info['key_players']}\n"
 
                 # Add recent performance if available
                 if 'recent_performance' in gemini_team_info:
                     team_message += f"\n**Recent Performance:**\n{gemini_team_info['recent_performance']}\n"
 
                 # Add data source
-                team_message += f"\n_Data provided by Gemini AI - {datetime.now().strftime('%Y-%m-%d')}_"
+                team_message += f"\n_Latest data from IPL {datetime.now().year} - Updated {datetime.now().strftime('%Y-%m-%d')}_"
 
                 await event.respond(team_message)
                 return
