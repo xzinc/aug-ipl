@@ -48,11 +48,6 @@
       "size": "eco"
     }
   },
-  "addons": [
-    {
-      "plan": "mongodb:sandbox",
-      "as": "MONGODB"
-    }
-  ],
+  "addons": [],
   "success_url": "/"
 }
