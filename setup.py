@@ -11,6 +11,7 @@ setup(
         "gunicorn==21.2.0",
         "kagglehub==0.2.5",
         "flask==2.0.1",
+        "werkzeug==2.0.3",
     ],
     python_requires=">=3.9,<3.12",
 )

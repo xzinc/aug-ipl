@@ -4,4 +4,6 @@ pymongo==4.6.1
 python-dotenv==1.0.0
 gunicorn==21.2.0
 kagglehub==0.2.5
+# Flask and compatible Werkzeug version
 flask==2.0.1
+werkzeug==2.0.3
