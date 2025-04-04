@@ -48,7 +48,11 @@
   "formation": {
     "worker": {
       "quantity": 1,
-      "size": "eco"
+      "size": "basic"
+    },
+    "web": {
+      "quantity": 1,
+      "size": "basic"
     }
   },
   "addons": [],
