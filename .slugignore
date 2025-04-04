@@ -9,3 +9,7 @@ __pycache__/
 .github/
 .gitignore
 .DS_Store
+.buildpacks
+.slugignore
+setup.cfg
+bin/pre_compile
