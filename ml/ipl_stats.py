@@ -105,6 +105,27 @@ sample_ipl_data = {
 # Global variable to store IPL data
 ipl_processed_data = sample_ipl_data
 
+def get_ipl_stats():
+    """
+    Get IPL statistics (simplified version)
+    """
+    global ipl_processed_data
+
+    # Calculate statistics
+    stats = {
+        'total_matches': 60,  # Placeholder value
+        'most_wins_team': 'CSK',
+        'most_wins_count': 30,
+        'highest_score_team': 'RCB',
+        'highest_score': 263,
+        'most_runs_player': 'Virat Kohli',
+        'most_runs': 6624,
+        'most_wickets_player': 'Jasprit Bumrah',
+        'most_wickets': 145
+    }
+
+    return stats
+
 def search_ipl_data(data_type, query):
     """
     Search IPL data for a specific query (simplified version)
