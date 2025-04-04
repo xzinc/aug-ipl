@@ -3,5 +3,5 @@ include .python-version
 include Procfile
 include Aptfile
 include setup.cfg
-# Only include specific bin files
-include bin/post_compile
+# Include NLTK data file
+include nltk.txt

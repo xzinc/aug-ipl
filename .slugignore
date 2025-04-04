@@ -3,6 +3,7 @@
 *.rst
 *.txt
 !requirements.txt
+!nltk.txt
 *.pyc
 __pycache__/
 .git/
@@ -13,3 +14,4 @@ __pycache__/
 .slugignore
 setup.cfg
 bin/pre_compile
+bin/post_compile

@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-# Download NLTK data
-python -m nltk.downloader punkt stopwords wordnet
-
-# Download spaCy models
-python -m spacy download en_core_web_sm

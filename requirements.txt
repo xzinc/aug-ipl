@@ -2,7 +2,7 @@
 wheel==0.41.2
 setuptools==68.2.2
 Cython==0.29.36
-numpy==1.24.4
+numpy==1.23.5
 
 # Application dependencies
 telethon==1.37.0
@@ -10,12 +10,12 @@ pymongo==4.6.1
 python-dotenv==1.0.0
 kagglehub==0.2.5
 pandas==2.0.3
-scikit-learn==1.2.2
+scikit-learn==1.0.2
 nltk==3.8.1
-transformers==4.30.2
-torch==2.0.1
+# transformers==4.30.2 # Commenting out to avoid build issues
+# torch==2.0.1 # Commenting out to avoid build issues
 # Removing fasttext due to build issues
 # If needed, install it manually after deployment
 # indic-nlp-library==0.91 # Commenting out to avoid build issues
-spacy==3.6.1
+# spacy==3.6.1 # Commenting out to avoid build issues
 gunicorn==21.2.0
