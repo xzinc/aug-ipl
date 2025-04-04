@@ -14,8 +14,8 @@ setup(
         "nltk==3.8.1",
         "transformers==4.30.2",
         "torch==2.0.1",
-        "fasttext-wheel==0.9.2",
-        "indic-nlp-library==0.91",
+        # "fasttext==0.9.2", # Removed due to build issues
+        # "indic-nlp-library==0.91", # Removed due to build issues
         "spacy==3.6.1",
         "gunicorn==21.2.0",
     ],

@@ -1,0 +1,8 @@
+include requirements.txt
+include requirements-build.txt
+include .python-version
+include Procfile
+include Aptfile
+include setup.cfg
+include bin/post_compile
+recursive-include bin *

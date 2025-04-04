@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Install build dependencies
+pip install wheel==0.41.2 setuptools==68.2.2 Cython==0.29.36 numpy==1.24.4
