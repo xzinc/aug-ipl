@@ -2,7 +2,7 @@
   <img src="https://github.com/manojsai7/Tg-ipl/blob/main/assets/logo.png" alt="IPL Telegram Bot Logo" width="200">
 </p>
 
-# IPL Telegram Bot
+# IPL Telegram " Bot "
 
 A Telegram bot that provides information about IPL (Indian Premier League) cricket matches, teams, and players. The bot uses AI and machine learning to enable human-like conversations and learns from user interactions over time. It also supports Telugu language for conversations.
 
